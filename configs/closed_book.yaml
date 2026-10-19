@@ -1,0 +1,30 @@
+system_name: closed_book
+phase: 1
+description: "Closed-book QA without retrieval or external context"
+
+models:
+  llm:
+    name: Qwen/Qwen3.5-9B
+    where: "Kaggle, Transformers, BitsAndBytes NF4 4-bit"
+    quantization: nf4
+    double_quantization: true
+    compute_dtype: float16
+
+  embedder: null
+  reranker: null
+
+settings:
+  retrieval:
+    method: none
+    k: 0
+
+  generation:
+    do_sample: false
+    enable_thinking: false
+    max_new_tokens: 64
+
+  use_context: false
+
+source_predictions:
+  dev: runs/dev/closed_book/predictions.jsonl
+  hidden: runs/hidden/closed_book/predictions.jsonl

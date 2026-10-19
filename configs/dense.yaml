@@ -1,0 +1,42 @@
+
+system_name: dense_rag
+phase: 1
+
+description: "Exact cosine Dense RAG with Qwen embeddings and Qwen3.5-9B"
+
+models:
+  llm:
+    name: Qwen/Qwen3.5-9B
+    where: "Kaggle, Transformers, BitsAndBytes NF4 4-bit"
+    quantization: nf4
+    double_quantization: true
+    compute_dtype: float16
+
+  embedder: Qwen/Qwen3-Embedding-4B
+  reranker: null
+
+settings:
+  retrieval:
+    unit: passage
+    method: exact_cosine
+    k: 10
+    document_mask: true
+    normalize_embeddings: true
+    document_batch_size: 4
+
+  embedding:
+    query_instruction: "Given a question, retrieve passages that contain the information needed to answer the question"
+
+  generation:
+    do_sample: false
+    enable_thinking: false
+    max_new_tokens: 64
+    max_input_tokens: 6144
+    context_truncation: remove_lowest_ranked_passage
+
+  prompt_file: prompts/dense.txt
+
+source_predictions:
+  dev: runs/dev/dense_rag_qwen3_5_9b/predictions.jsonl
+  hidden: runs/hidden/dense_rag_qwen3_5_9b/predictions.jsonl
+

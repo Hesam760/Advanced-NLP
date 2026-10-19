@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.venv-mlflow/
+.ipynb_checkpoints/
+
+# Large datasets and model outputs
+course_pack_v1/
+chroma_qwen3_embedding4b/
+embedding_experiments/
+llm_experiments/
+runs/
+*.npy
+*.zip
+
+# MLflow
+mlflow_store/
+mlflow_tracking/
+mlruns/
+*.sqlite3
+
+# Temporary files
+*.bak
