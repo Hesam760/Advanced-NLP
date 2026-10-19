@@ -1,30 +1,31 @@
 system_name: oracle
 phase: 1
-description: "Oracle QA using gold passages from the Dev labels"
-
+description: Oracle QA using gold passages from the Dev labels
 models:
   llm:
     name: Qwen/Qwen3.5-9B
-    where: "Kaggle, Transformers, BitsAndBytes NF4 4-bit"
+    where: Kaggle, Transformers, BitsAndBytes NF4 4-bit
     quantization: nf4
     double_quantization: true
     compute_dtype: float16
-
+    load_in_4bit: true
+    model_dtype: float16
+    attention_implementation: sdpa
+    device_map: auto
+    low_cpu_mem_usage: true
   embedder: null
   reranker: null
-
 settings:
   retrieval:
     method: gold_doc_ids
     unit: passage
-
   generation:
     do_sample: false
     enable_thinking: false
     max_new_tokens: 64
     max_input_tokens: 6144
-
+    device: cuda:0
   use_context: true
-
+  prompt_file: prompts/oracle.txt
 source_predictions:
   dev: runs/dev/context_oracle_qwen3_5_9b/predictions.jsonl

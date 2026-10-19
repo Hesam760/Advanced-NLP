@@ -1,20 +1,20 @@
-
 system_name: dense_rag
 phase: 1
-
-description: "Exact cosine Dense RAG with Qwen embeddings and Qwen3.5-9B"
-
+description: Exact cosine Dense RAG with Qwen embeddings and Qwen3.5-9B
 models:
   llm:
     name: Qwen/Qwen3.5-9B
-    where: "Kaggle, Transformers, BitsAndBytes NF4 4-bit"
+    where: Kaggle, Transformers, BitsAndBytes NF4 4-bit
     quantization: nf4
     double_quantization: true
     compute_dtype: float16
-
+    load_in_4bit: true
+    model_dtype: float16
+    attention_implementation: sdpa
+    device_map: auto
+    low_cpu_mem_usage: true
   embedder: Qwen/Qwen3-Embedding-4B
   reranker: null
-
 settings:
   retrieval:
     unit: passage
@@ -22,21 +22,32 @@ settings:
     k: 10
     document_mask: true
     normalize_embeddings: true
-    document_batch_size: 4
-
+    chroma_batch_size: 64
+    chroma_dir: /kaggle/working/chroma_qwen3_embedding4b
+    collection_name: course_passages_qwen3_emb4b_v1
+    space: cosine
   embedding:
-    query_instruction: "Given a question, retrieve passages that contain the information needed to answer the question"
-
+    query_instruction: Given a question, retrieve passages that contain the information
+      needed to answer the question
+    max_seq_length: 2048
+    exploratory_batch_size: 8
+    document_batch_size: 4
+    query_batch_size: 1
+    precision: float32
+    device: cuda:0
+    torch_dtype: float16
   generation:
     do_sample: false
     enable_thinking: false
     max_new_tokens: 64
     max_input_tokens: 6144
     context_truncation: remove_lowest_ranked_passage
-
+    device: cuda:0
+    context_top_k: 10
   prompt_file: prompts/dense.txt
-
 source_predictions:
   dev: runs/dev/dense_rag_qwen3_5_9b/predictions.jsonl
   hidden: runs/hidden/dense_rag_qwen3_5_9b/predictions.jsonl
-
+retrieval_predictions:
+  dev: runs/dev/dense_chroma_qwen3_4b/predictions.jsonl
+  hidden: runs/hidden/dense_chroma_qwen3_4b/predictions.jsonl
