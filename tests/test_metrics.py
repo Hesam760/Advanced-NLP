@@ -1,7 +1,5 @@
-
 import math
 import pytest
-
 from src.metrics import retrieval_metrics
 from score import per_question
 

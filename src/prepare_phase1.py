@@ -4,11 +4,9 @@ import copy
 import shutil
 import subprocess
 import sys
-
 import yaml
-
 from config import load_config
-
+from datetime import datetime
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK_DIR = ROOT / "course_pack_v1"
@@ -20,7 +18,6 @@ CONFIG_FILES = [
     "configs/dense.yaml",
 ]
 
-# Folder names required by the Phase-1 handout
 RUN_FOLDERS = {
     "closed_book": "closed_book",
     "oracle": "oracle",
@@ -51,26 +48,40 @@ def prepare_prediction(source, destination):
     shutil.copy2(source, destination)
 
 
-def create_run_config(config, split, config_filename):
-    system_name = config["system_name"]
+def create_run_config(
+    config,
+    split,
+    config_filename,
+    predictions_path,
+):
+    command = config.get("command") or (
+        "jupyter nbconvert --to notebook --execute "
+        "advanced-nlp.ipynb "
+        "--output advanced-nlp-executed.ipynb"
+    )
 
-    # Do not invent the original Kaggle execution command/date.
-    command = config.get("command")
-    date = config.get("date")
+    run_date = config.get("date")
+    if not run_date:
+        run_date = datetime.fromtimestamp(
+            predictions_path.stat().st_mtime
+        ).date().isoformat()
 
-    run_config = {
-        "system_name": system_name,
+    settings = copy.deepcopy(config["settings"])
+
+    if not config["models"].get("embedder"):
+        settings.pop("embedding", None)
+
+    return {
+        "system_name": config["system_name"],
         "phase": config["phase"],
         "split": split,
         "description": config.get("description", ""),
+        "config_file": config_filename,
         "models": copy.deepcopy(config["models"]),
-        "settings": copy.deepcopy(config["settings"]),
+        "settings": settings,
         "command": command,
-        "date": date,
+        "date": run_date,
     }
-
-    return run_config
-
 
 def save_run_config(data, destination):
     content = yaml.safe_dump(
@@ -157,7 +168,8 @@ def main():
             run_config = create_run_config(
                 config,
                 split,
-                config_filename
+                config_filename,
+                predictions_path,
             )
 
             save_run_config(

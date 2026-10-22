@@ -1,9 +1,6 @@
 from pathlib import Path
-
 from src.config import load_config
-
 ROOT = Path(__file__).resolve().parents[1]
-
 
 def test_config_files_and_prompts():
     for name in ("closed_book", "oracle", "dense"):
@@ -26,9 +23,9 @@ def test_models_and_dense_retrieval_config():
 
 def test_notebook_imports_tested_modules():
     import json
-    path = ROOT / "advanced-nlp-config-driven.ipynb"
+    path = ROOT / "advanced-nlp.ipynb"
     cells = json.loads(path.read_text(encoding="utf-8"))["cells"]
     code = "\n".join("".join(c.get("source", [])) for c in cells)
     assert "from src.metrics import retrieval_metrics" in code
     assert "from src.retrieval import exact_cosine_search" in code
-    assert "a1_prompt(DENSE_CFG)" in code
+    assert "load_prompt(DENSE_CFG)" in code

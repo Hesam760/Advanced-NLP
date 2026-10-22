@@ -4,17 +4,13 @@ description: Oracle QA using gold passages from the Dev labels
 models:
   llm:
     name: Qwen/Qwen3.5-9B
-    where: Kaggle, Transformers, BitsAndBytes NF4 4-bit
+    temperature: 0
     quantization: nf4
-    double_quantization: true
     compute_dtype: float16
-    load_in_4bit: true
-    model_dtype: float16
-    attention_implementation: sdpa
-    device_map: auto
-    low_cpu_mem_usage: true
+
   embedder: null
   reranker: null
+
 settings:
   retrieval:
     method: gold_doc_ids

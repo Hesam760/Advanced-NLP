@@ -1,17 +1,10 @@
 import math
 
-
 def retrieval_metrics(ranked, gold_ids):
-    """
-    Compute hand-written retrieval metrics.
-
-    ranked: ranked passage IDs, best first
-    gold_ids: ground-truth passage IDs
-    """
     gold = set(gold_ids)
 
     if not gold:
-        raise ValueError("gold_ids must not be empty")
+        raise ValueError("gold_ids cannot be empty")
 
     result = {}
 

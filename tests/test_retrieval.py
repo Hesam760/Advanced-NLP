@@ -1,13 +1,8 @@
-
 import numpy as np
 import pytest
-
 from src.retrieval import exact_cosine_search
 
-
 DOC_IDS = ["p1", "p2", "p3"]
-
-# All embeddings are L2-normalized.
 DOC_EMBEDDINGS = np.array([
     [1.0, 0.0],
     [0.8, 0.6],
@@ -15,7 +10,6 @@ DOC_EMBEDDINGS = np.array([
 ], dtype=np.float32)
 
 QUERY = np.array([1.0, 0.0], dtype=np.float32)
-
 
 def search(k, exclude_ids=None):
     return exact_cosine_search(
@@ -36,9 +30,6 @@ def test_document_mask_before_topk():
         k=2,
         exclude_ids={"p1"},
     )
-
-    # p1 has the highest score but must be excluded.
-    # p3 must replace it, not leave an empty slot.
     assert result == ["p2", "p3"]
 
 
