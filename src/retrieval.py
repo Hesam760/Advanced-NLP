@@ -55,3 +55,30 @@ def exact_cosine_search(
         for i in ranked_indices
     ]
 
+def reciprocal_rank_fusion(ranked_lists, rank_constant=60):
+
+    if rank_constant < 0:
+        raise ValueError("rank_constant must be non-negative")
+
+    scores = {}
+    first_seen = {}
+
+    for ranked_list in ranked_lists:
+        seen_in_list = set()
+
+        for rank, doc_id in enumerate(ranked_list, start=1):
+            if doc_id in seen_in_list:
+                continue
+
+            seen_in_list.add(doc_id)
+
+            if doc_id not in scores:
+                scores[doc_id] = 0.0
+                first_seen[doc_id] = len(first_seen)
+
+            scores[doc_id] += 1.0 / (rank_constant + rank)
+
+    return sorted(
+        scores,
+        key=lambda doc_id: (-scores[doc_id], first_seen[doc_id]),
+    )
