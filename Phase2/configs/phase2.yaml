@@ -1,0 +1,105 @@
+phase: 2
+models:
+  llm:
+    name: Qwen/Qwen3.5-9B
+    quantization: nf4
+    compute_dtype: float16
+    do_sample: false
+    effective_temperature: 0
+    seed: 42
+  embedder: Qwen/Qwen3-Embedding-4B
+  reranker: null
+seed: 42
+generation:
+  do_sample: false
+  temperature: 0
+  max_new_tokens: 160
+  max_input_tokens: 6144
+  max_context_tokens: 1800
+  enable_thinking: false
+  prompt_text: 'You answer English multi-hop questions using ONLY the passages in
+    the context. Combine facts across passages when needed. If there is not enough
+    evidence for every necessary step, do not guess: abstain. Output exactly one JSON
+    object with keys: answer (short string), cited (list of supporting doc_id strings),
+    abstained (boolean). For an unsupported answer, use {"answer":"","cited":[],"abstained":true}.
+    Citations must contain only document IDs in the supplied context. No markdown,
+    no reasoning, no extra prose.'
+  context_template: '[doc_id] Title Text'
+embedding:
+  max_length: 1536
+retrieval:
+  final_k: 10
+  bm25_k1: 1.5
+  bm25_b: 0.75
+  rrf_k: 60
+  dense_candidates: 10
+  bm25_candidates: 10
+runs:
+  dev_dense_fair:
+    unit: passage
+    method: dense_exact_cosine
+    dense_source: fresh checkpoint embeddings / exact cosine
+    dense_top_k: 10
+    bm25_top_k: 0
+    retrieved_k: 10
+    bm25_k1: 1.5
+    bm25_b: 0.75
+    rrf_k: null
+    gold_masked_before_retrieval: false
+  dev_hybrid:
+    unit: passage
+    method: hybrid_rrf
+    dense_source: fresh checkpoint embeddings / exact cosine
+    dense_top_k: 10
+    bm25_top_k: 10
+    retrieved_k: 10
+    bm25_k1: 1.5
+    bm25_b: 0.75
+    rrf_k: 60
+    gold_masked_before_retrieval: false
+  hidden_hybrid:
+    unit: passage
+    method: hybrid_rrf
+    dense_source: fresh checkpoint embeddings / exact cosine
+    dense_top_k: 10
+    bm25_top_k: 10
+    retrieved_k: 10
+    bm25_k1: 1.5
+    bm25_b: 0.75
+    rrf_k: 60
+    gold_masked_before_retrieval: false
+  dev_title:
+    unit: title_plus_passage
+    method: hybrid_rrf
+    dense_source: fresh checkpoint embeddings / exact cosine
+    dense_top_k: 10
+    bm25_top_k: 10
+    retrieved_k: 10
+    bm25_k1: 1.5
+    bm25_b: 0.75
+    rrf_k: 60
+    gold_masked_before_retrieval: false
+  dev_sentence:
+    unit: sentence_max_pool
+    method: hybrid_rrf
+    dense_source: fresh checkpoint embeddings / exact cosine
+    dense_top_k: 10
+    bm25_top_k: 10
+    retrieved_k: 10
+    bm25_k1: 1.5
+    bm25_b: 0.75
+    rrf_k: 60
+    gold_masked_before_retrieval: false
+  dev_masked:
+    unit: passage
+    method: hybrid_rrf
+    dense_source: fresh checkpoint embeddings / exact cosine
+    dense_top_k: 10
+    bm25_top_k: 10
+    retrieved_k: 10
+    bm25_k1: 1.5
+    bm25_b: 0.75
+    rrf_k: 60
+    gold_masked_before_retrieval: true
+source: Generated from actual phase-2 run_config.yaml files
+source_zip_sha256: 8f34cbb3daebb26ef3867dbc181abd8fe1242a539dc3dff0110e0ffc3f5a4c35
